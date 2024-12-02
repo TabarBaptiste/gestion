@@ -31,9 +31,58 @@
         const inputs = document.querySelectorAll('.champ input');
 
         inputs.forEach((input, index) => {
+
+            // Gère le collage
+            input.addEventListener('paste', (e) => {
+                e.preventDefault(); // Empêche le comportement par défaut
+                const pasteData = e.clipboardData.getData('text').replace(/\D/g, ''); // Garde uniquement les chiffres
+
+                if (pasteData) {
+                    // Répartit les caractères collés entre les champs
+                    let currentIndex = index;
+                    for (let char of pasteData) {
+                        if (currentIndex < inputs.length) {
+                            inputs[currentIndex].value = char;
+
+                            // Simule un événement input pour chaque champ
+                            const inputEvent = new Event('input', { bubbles: true });
+                            inputs[currentIndex].dispatchEvent(inputEvent);
+
+                            currentIndex++;
+                        } else {
+                            break; // Arrête si tous les champs sont remplis
+                        }
+                    }
+
+                    // Place le focus sur le premier champ vide
+                    if (currentIndex < inputs.length) {
+                        inputs[currentIndex].focus();
+                    } else if (currentIndex >= 4) {
+                        inputs[currentIndex - 1].focus();
+                    }
+                }
+            });
+
+            // Retour au champ précédent avec "Backspace"
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+
+                // Empêche l'entrée des caractères non numériques
+                // if (['e', 'E', '-', '+', '.'].includes(e.key)) {
+                //     e.preventDefault();
+                // }
+            });
+
             // Limite chaque champ à un seul caractère
             input.addEventListener('input', (e) => {
                 const value = e.target.value;
+                // Supprime tout caractère non numérique
+                if (!/^\d$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
 
                 if (value.length > 1) {
                     e.target.value = value.slice(0, 1);
@@ -65,17 +114,23 @@
 
             // Déchiffre le code pour le comparer
             const decryptedCode = decrypt(encryptedCode);
-            console.log("decryptedCode :", decryptedCode);
 
             if (userCode === decryptedCode) {
-                // Redirige vers la page si le code est correct
-                inputs.forEach(input => (input.value = '')); // Réinitialise les champs
-                inputs[0].focus(); // Repositionne le curseur sur le premier champ
+                // Réinitialise les champs
+
+                // Attendre un court délai avant la redirection
                 window.location.href = 'https://conge.netlify.app';
-            } else {
-                alert('Code incorrect. Veuillez réessayer.');
-                inputs.forEach(input => (input.value = '')); // Réinitialise les champs
-                inputs[0].focus(); // Repositionne le curseur sur le premier champ
+                setTimeout(() => {
+                    inputs.forEach(input => (input.value = ''));
+                    inputs[0].focus(); // Repositionne le curseur sur le premier champ
+                }, 100); // 100 ms pour que l'utilisateur voie les changements
+            }
+            else {
+                setTimeout(() => {
+                    inputs.forEach(input => (input.value = ''));
+                    inputs[0].focus(); // Repositionne le curseur sur le premier champ
+                    alert('Code incorrect. Veuillez réessayer.');
+                }, 100);
             }
         }
     </script>
