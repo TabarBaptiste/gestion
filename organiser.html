@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="organiser.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Calculateur 50/30/20</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Mieux organiser son budget</h1>
+        <div class="etape">
+            <h2>Étape 1 : vos revenus</h2>
+            <div class="revenus">
+                <div class="champ">
+                    <label for="salaire">Salaire</label>
+                    <div class="input-icon">
+                        <input type="number" name="salaire" id="salaire" min="0" placeholder="1000">
+                        <span>€</span>
+                    </div>
+                </div>
+                <div class="champ">
+                    <label for="revenu">Autres revenus</label>
+                    <div class="input-icon">
+                        <input type="number" name="revenu" id="revenu" min="0" placeholder="0">
+                        <span>€</span>
+                    </div>
+                </div>                               
+            </div>
+        </div>
+        <div class="etape">
+            <h2>Étape 2 : votre répartition</h2>
+            <div class="budget">
+                <div class="contenu">
+                    <div class="repartition">
+                        <p>Vos besoins</p>
+                        <p>50 % de votre budget</p>
+                    </div>
+                    <div id="resultat-50">500 €</div>
+                </div>
+                <div class="contenu">
+                    <div class="repartition">
+                        <p>Vos loisirs</p>
+                        <p>30 % de votre budget</p>
+                    </div>
+                    <div id="resultat-30">300 €</div>
+                </div>
+                <div class="contenu">
+                    <div class="repartition">
+                        <p>Votre épargne</p>
+                        <p>20 % de votre budget</p>
+                    </div>
+                    <div id="resultat-20">200 €</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    // Fonction de calcul de la répartition 50/30/20
+    function calculateBudget() {
+        const salaire = parseFloat(document.getElementById('salaire').value) || 1000;
+        const revenu = parseFloat(document.getElementById('revenu').value) || 0;
+
+        const totalBudget = salaire + revenu;
+
+        const besoins = (totalBudget * 0.5).toFixed(0); // 50%
+        const loisirs = (totalBudget * 0.3).toFixed(0); // 30%
+        const epargne = (totalBudget * 0.2).toFixed(0); // 20%
+
+        // Mise à jour des résultats
+        document.getElementById('resultat-50').textContent = `${besoins} €`;
+        document.getElementById('resultat-30').textContent = `${loisirs} €`;
+        document.getElementById('resultat-20').textContent = `${epargne} €`;
+    }
+
+    // Ajouter des écouteurs d'événements sur les champs "Salaire" et "Revenu"
+    document.getElementById('salaire').addEventListener('input', calculateBudget);
+    document.getElementById('revenu').addEventListener('input', calculateBudget);
+</script>

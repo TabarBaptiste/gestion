@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur d'Épargne Mensuelle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Calculateur d'Épargne Mensuelle</h1>
+        <div class="champ">
+            <label for="futureValue">Valeur future (en €) :</label>
+            <input type="number" id="futureValue" placeholder="Exemple : 10000" required>
+
+            <label for="interestRate">Taux d'intérêt annuel (en %, défaut : 3%) :</label>
+            <input type="number" id="interestRate" placeholder="Exemple : 3">
+
+            <label for="months">Nombre de mois :</label>
+            <input type="number" id="months" placeholder="Exemple : 24" required>
+        </div>
+
+        <div class="apres">
+            <p id="result" style="display: none;"></p>
+        </div>
+    </div>
+
+    <script>
+        // Fonction qui calcule automatiquement dès que les valeurs changent
+        function calculateSavings() {
+            const futureValue = parseFloat(document.getElementById('futureValue').value);
+            const interestRateInput = document.getElementById('interestRate').value;
+            const interestRate = interestRateInput ? parseFloat(interestRateInput) / 100 / 12 : 0.03 / 12;
+            const months = parseInt(document.getElementById('months').value);
+
+            if (!futureValue || !months) {
+                document.getElementById('result').style.display = 'none';
+                return;
+            }
+
+            const monthlySavings = futureValue * interestRate / (Math.pow(1 + interestRate, months) - 1);
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `Vous devez épargner environ <strong>${monthlySavings.toFixed(0)}€</strong> par mois.`; // Mise en gras
+            resultDiv.style.display = 'block';
+        }
+
+        // Ajouter des écouteurs d'événements pour chaque champ afin de déclencher le calcul automatiquement
+        document.getElementById('futureValue').addEventListener('input', calculateSavings);
+        document.getElementById('interestRate').addEventListener('input', calculateSavings);
+        document.getElementById('months').addEventListener('input', calculateSavings);
+    </script>
+</body>
+
+</html>

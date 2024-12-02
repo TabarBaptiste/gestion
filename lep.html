@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de LEP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Simulateur de LEP</h1>
+        <div class="formulaire">
+            <div class="champ">
+                <label for="versement-initial">Montant du versement initial (en euros) :</label>
+                <input type="number" id="versement-initial" min="0" step="0.01" placeholder="Minimum 30€">
+            </div>
+            <div class="champ">
+                <label for="versement-mensuel">Versement mensuel (en euros) :</label>
+                <input type="number" id="versement-mensuel" min="0" step="0.01" required>
+            </div>
+            <div class="champ">
+                <label for="duree-epargne">Durée de l'épargne (en années) :</label>
+                <input type="number" id="duree-epargne" step="1" min="1" placeholder="Minimum 1an" required>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="container2">
+        <div id="resultat-epargne"></div>
+    </div>
+    <script>
+    // Constants
+        const LIMITE_VERSEMENTS = 10000; // Limite des versements sur le Livret A
+        const TAUX_ANNUEL = 4.0 / 100; // Taux annuel en décimal
+
+        // Fonction : Validation de la limite et ajustement des versements
+        function calculerVersementsMensuels(versementsTotaux, versementMensuel) {
+            const montantRestant = LIMITE_VERSEMENTS - versementsTotaux;
+            return Math.min(versementMensuel, montantRestant);
+        }
+
+        // Fonction : Calcul des intérêts mensuels
+        function calculerInteretsMensuels(montant) {
+            return montant * (TAUX_ANNUEL / 12);
+        }
+
+        // Fonction principale : Calcul de l'épargne
+        function recalculerEpargne() {
+            const versementInitial = parseFloat(document.getElementById("versement-initial").value) || 0;
+            const versementMensuel = parseFloat(document.getElementById("versement-mensuel").value) || 0;
+            const dureeAnnees = parseInt(document.getElementById("duree-epargne").value) || 0;
+
+            // Validation des entrées
+            if (versementInitial < 0) {
+                document.getElementById("resultat-epargne").innerHTML = '<p>Entrer un versement initial positif.</p>';
+                return;
+            } else if (versementMensuel < 0) {
+                document.getElementById("resultat-epargne").innerHTML = "<p>Entrer un versement mensuel positif.</p>";
+                return;
+            } else if (dureeAnnees <= 0) {
+                document.getElementById("resultat-epargne").innerHTML = "<p>La durée de l'épargne doit être d'au moins 1 an.</p>";
+                return;
+            }
+
+            const nombreMois = dureeAnnees * 12;
+            let epargneTotale = versementInitial;
+            let versementsTotaux = versementInitial;
+            let totalInterets = 0;
+
+            for (let mois = 1; mois <= nombreMois; mois++) {
+                // Ajouter les intérêts pour le mois
+                const interetsMensuels = calculerInteretsMensuels(epargneTotale);
+                totalInterets += interetsMensuels;
+                epargneTotale += interetsMensuels;
+
+                // Vérifier si des versements mensuels sont encore possibles
+                if (versementsTotaux < LIMITE_VERSEMENTS) {
+                    const versementEffectif = calculerVersementsMensuels(versementsTotaux, versementMensuel);
+                    epargneTotale += versementEffectif;
+                    versementsTotaux += versementEffectif;
+                }
+            }
+
+            // Résultats finaux
+            afficherResultats(dureeAnnees, epargneTotale, versementsTotaux, totalInterets);
+            afficherGraphique(epargneTotale, versementsTotaux, totalInterets);
+            afficherGraphiqueSecteur(epargneTotale, versementsTotaux, totalInterets);
+        }
+
+        // Fonction : Affichage des résultats
+        function afficherResultats(dureeAnnees, epargneTotale, versementsTotaux, totalInterets) {
+            document.getElementById("resultat-epargne").innerHTML = `<div class="container">
+                    <p class="apres">Après ${dureeAnnees} années d'épargne</p>
+                        <p>Épargne totale : <span><strong>${epargneTotale.toFixed(2)}€</strong></span></p>
+                        <p>Total des versements : <strong>${versementsTotaux.toFixed(2)}€</strong></p>
+                        <p>Intérêts gagnés : <strong>${totalInterets.toFixed(2)}€</strong></p>
+                </div>`;
+        }
+
+        // Fonction : Affichage du graphique
+        function afficherGraphique(epargneTotale, versementsTotaux, totalInterets) {
+            const ctx = document.getElementById("histogramme").getContext("2d");
+            const existingChart = Chart.getChart(ctx);
+
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: ["Épargne Totale", "Versements", "Intérêts"],
+                    datasets: [{
+                        label: "Montants (en euros)",
+                        data: [epargneTotale, versementsTotaux, totalInterets],
+                        backgroundColor: ["rgba(255, 99, 132, 0.5)", "rgba(54, 162, 235, 0.5)", "rgba(75, 192, 192, 0.5)"],
+                        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(75, 192, 192, 1)"],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+
+            const ctx2 = document.getElementById("graphique-secteur").getContext("2d");
+            const existingChart2 = Chart.getChart(ctx2);
+            if (existingChart2) {
+                existingChart2.destroy();
+            }
+            const data2 = {
+                labels: ["Épargne Totale", "Versements", "Intérêts Gagnés"],
+                datasets: [{
+                    data: [epargneTotale, versementsTotaux, totalInterets],
+                    backgroundColor: ["rgba(255, 99, 132, 0.5)", "rgba(54, 162, 235, 0.5)", "rgba(75, 192, 192, 0.5)"],
+                    borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(75, 192, 192, 1)"],
+                    borderWidth: 1,
+                }],
+            };
+
+            const config2 = {
+                type: "pie",
+                data: data2,
+            };
+
+            new Chart(ctx2, config2);
+
+        }
+        // Fonction : Affichage du graphique en secteurs
+        function afficherGraphiqueSecteur(epargneTotale, versementsTotaux, totalInterets) {
+            const ctx2 = document.getElementById("graphique-secteur").getContext("2d");
+            const existingChart2 = Chart.getChart(ctx2);
+
+            if (existingChart2) {
+                existingChart2.destroy();
+            }
+
+            new Chart(ctx2, {
+                type: "pie",
+                data: {
+                    labels: ["Épargne Totale", "Versements Mensuels", "Intérêts Gagnés"],
+                    datasets: [{
+                        data: [epargneTotale, versementsTotaux, totalInterets],
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.5)",
+                            "rgba(54, 162, 235, 0.5)",
+                            "rgba(75, 192, 192, 0.5)"
+                        ],
+                        borderColor: [
+                            "rgba(255, 99, 132, 1)",
+                            "rgba(54, 162, 235, 1)",
+                            "rgba(75, 192, 192, 1)"
+                        ],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                },
+            });
+        }
+
+        // Ajouter les écouteurs d'événements aux champs de saisie
+        // Ajout des écouteurs d'événements
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", recalculerEpargne);
+        });
+    </script>
+
+    <div class="graph">
+        <canvas id="histogramme" width="200" height="200"></canvas>
+    </div>
+    <div class="graph">
+        <canvas id="graphique-secteur" width="400" height="200"></canvas>
+    </div>
+
+</body>
+
+</html>
