@@ -41,7 +41,7 @@ a:hover {
     /* Ombre douce */
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width:800px) {
     body {
         margin: 15px;
     }

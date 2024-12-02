@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/code.css">
+    <title>Accès à la page</title>
+</head>
+
+<body>
+    <div class="code">
+        <h1>Code d'accès</h1>
+        <div class="champ">
+            <input type="number" min="0" max="9" maxlength="1">
+            <input type="number" min="0" max="9" maxlength="1">
+            <input type="number" min="0" max="9" maxlength="1">
+            <input type="number" min="0" max="9" maxlength="1">
+        </div>
+    </div>
+
+    <script>
+        // Sélectionne tous les champs
+        const inputs = document.querySelectorAll('.champ input');
+
+        inputs.forEach((input, index) => {
+            // Limite chaque champ à un seul caractère
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+
+                if (value.length > 1) {
+                    e.target.value = value.slice(0, 1);
+                }
+
+                // Passe automatiquement au champ suivant
+                if (value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+
+                // Si tous les champs sont remplis, vérifie le code
+                if (index === inputs.length - 1 && Array.from(inputs).every(input => input.value)) {
+                    validateCode();
+                }
+            });
+
+            // Retour au champ précédent avec "Backspace"
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Fonction pour valider le code
+        function validateCode() {
+            const code = Array.from(inputs).map(input => input.value).join('');
+
+            if (code === '1234') {
+                // Redirige l'utilisateur vers ../liens_utiles
+                window.location.href = 'https://conge.netlify.app';
+                inputs.forEach(input => (input.value = '')); // Réinitialise les champs
+                inputs[0].focus(); // Repositionne le curseur sur le premier champ
+            } else {
+                alert('Code incorrect. Veuillez réessayer.');
+                inputs.forEach(input => (input.value = '')); // Réinitialise les champs
+                inputs[0].focus(); // Repositionne le curseur sur le premier champ
+            }
+        }
+    </script>
+</body>
+
+</html>
