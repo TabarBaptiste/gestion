@@ -20,6 +20,13 @@
     </div>
 
     <script>
+        const encryptedCode = "9:;<";
+
+        // Fonction de déchiffrement (décale chaque caractère de -4)
+        function decrypt(code) {
+            return code.split('').map(char => String.fromCharCode(char.charCodeAt(0) - 8)).join('');
+        }
+
         // Sélectionne tous les champs
         const inputs = document.querySelectorAll('.champ input');
 
@@ -53,13 +60,18 @@
 
         // Fonction pour valider le code
         function validateCode() {
-            const code = Array.from(inputs).map(input => input.value).join('');
+            // Récupère le code saisi
+            const userCode = Array.from(inputs).map(input => input.value).join('');
 
-            if (code === '1234') {
-                // Redirige l'utilisateur vers ../liens_utiles
-                window.location.href = 'https://conge.netlify.app';
+            // Déchiffre le code pour le comparer
+            const decryptedCode = decrypt(encryptedCode);
+            console.log("decryptedCode :", decryptedCode);
+
+            if (userCode === decryptedCode) {
+                // Redirige vers la page si le code est correct
                 inputs.forEach(input => (input.value = '')); // Réinitialise les champs
                 inputs[0].focus(); // Repositionne le curseur sur le premier champ
+                window.location.href = 'https://conge.netlify.app';
             } else {
                 alert('Code incorrect. Veuillez réessayer.');
                 inputs.forEach(input => (input.value = '')); // Réinitialise les champs
