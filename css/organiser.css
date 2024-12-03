@@ -84,7 +84,7 @@ p {
     font-size: x-large;
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 700px) {
     body {
         margin: 15px;
     }
@@ -143,4 +143,25 @@ input[type="number"]::-webkit-outer-spin-button {
 /* Supprimer les flèches pour Firefox */
 input[type="number"] {
     -moz-appearance: textfield;
+}
+
+.pourcentage {
+    text-align: center;
+    margin-top: 5%;
+}
+
+#distribution {
+    border: 1px solid #e8dfd8;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#distribution:hover {
+    outline: 1px solid #e8dfd8;
+}
+#distribution:focus {
+    outline: 1px solid #e8dfd8;
+}
+.option {
+    margin-right: 2%;
 }

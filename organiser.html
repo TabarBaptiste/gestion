@@ -28,8 +28,23 @@
                         <input type="number" name="revenu" id="revenu" min="0" placeholder="0">
                         <span>€</span>
                     </div>
-                </div>                               
+                </div>
             </div>
+        </div>
+        <div class="pourcentage">
+            <label for="distribution">Choisissez une répartition :</label>
+            <select id="distribution">
+                <optgroup label="50% besoins">
+                    <option value="50/30/20" selected>50/30/20</option>
+                    <option value="50/35/15">50/35/15</option>
+                    <option value="50/40/10">50/40/10</option>
+                </optgroup>
+                <optgroup label="45% besoins">
+                    <option value="45/30/25">45/30/25</option>
+                    <option value="45/35/20">45/35/20</option>
+                    <option value="45/40/15">45/40/15</option>
+                </optgroup>
+            </select>
         </div>
         <div class="etape">
             <h2>Étape 2 : votre répartition</h2>
@@ -62,24 +77,45 @@
 
 </html>
 <script>
-    // Fonction de calcul de la répartition 50/30/20
+    // Fonction pour convertir la répartition sélectionnée en pourcentages
+    function getDistributionValues(distribution) {
+        const [needs, wants, savings] = distribution.split('/').map(Number);
+        return {
+            needs: needs / 100,
+            wants: wants / 100,
+            savings: savings / 100,
+        };
+    }
+
+    // Fonction de calcul de la répartition selon la sélection
     function calculateBudget() {
         const salaire = parseFloat(document.getElementById('salaire').value) || 1000;
         const revenu = parseFloat(document.getElementById('revenu').value) || 0;
 
         const totalBudget = salaire + revenu;
 
-        const besoins = (totalBudget * 0.5).toFixed(0); // 50%
-        const loisirs = (totalBudget * 0.3).toFixed(0); // 30%
-        const epargne = (totalBudget * 0.2).toFixed(0); // 20%
+        // Récupérer la répartition sélectionnée
+        const distribution = document.getElementById('distribution').value;
+        const { needs, wants, savings } = getDistributionValues(distribution);
 
-        // Mise à jour des résultats
+        // Calculer les montants pour chaque catégorie
+        const besoins = (totalBudget * needs).toFixed(0);
+        const loisirs = (totalBudget * wants).toFixed(0);
+        const epargne = (totalBudget * savings).toFixed(0);
+
+        // Mettre à jour les résultats
         document.getElementById('resultat-50').textContent = `${besoins} €`;
         document.getElementById('resultat-30').textContent = `${loisirs} €`;
         document.getElementById('resultat-20').textContent = `${epargne} €`;
+
+        // Mettre à jour les pourcentages affichés
+        document.querySelectorAll('.repartition p:nth-child(2)')[0].textContent = `${(needs * 100).toFixed(0)} % de votre budget`;
+        document.querySelectorAll('.repartition p:nth-child(2)')[1].textContent = `${(wants * 100).toFixed(0)} % de votre budget`;
+        document.querySelectorAll('.repartition p:nth-child(2)')[2].textContent = `${(savings * 100).toFixed(0)} % de votre budget`;
     }
 
-    // Ajouter des écouteurs d'événements sur les champs "Salaire" et "Revenu"
+    // Ajouter des écouteurs d'événements
     document.getElementById('salaire').addEventListener('input', calculateBudget);
     document.getElementById('revenu').addEventListener('input', calculateBudget);
+    document.getElementById('distribution').addEventListener('change', calculateBudget);
 </script>
