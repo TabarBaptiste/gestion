@@ -15,7 +15,7 @@
             <label for="futureValue">Valeur future (en €) :</label>
             <input type="number" id="futureValue" placeholder="Exemple : 10000" required>
 
-            <label for="interestRate">Taux d'intérêt annuel (en %, défaut : 3%) :</label>
+            <label for="interestRate">Taux d'intérêt annuel (en %, défaut : 2,5%) :</label>
             <input type="number" id="interestRate" placeholder="Exemple : 3">
 
             <label for="months">Nombre de mois :</label>
@@ -32,7 +32,7 @@
         function calculateSavings() {
             const futureValue = parseFloat(document.getElementById('futureValue').value);
             const interestRateInput = document.getElementById('interestRate').value;
-            const interestRate = interestRateInput ? parseFloat(interestRateInput) / 100 / 12 : 0.03 / 12;
+            const interestRate = interestRateInput ? parseFloat(interestRateInput) / 100 / 12 : 0.025 / 12;
             const months = parseInt(document.getElementById('months').value);
 
             if (!futureValue || !months) {

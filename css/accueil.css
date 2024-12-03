@@ -25,7 +25,7 @@ h1 {
     color: #333;
 }
 
-.lien {
+a {
     color: #05403e;
     display: flex;
     padding: 20px;
@@ -33,12 +33,12 @@ h1 {
     border-radius: 5px;
     background-color: #fefdfd;
     transition: box-shadow 0.3s ease-in-out;
+    text-decoration: none;
 }
 
-a {
-    text-decoration: none;
+i {
     color: #05403e;
-    margin-left: 2%;
+    margin-right: 2%;
 }
 
 img {
