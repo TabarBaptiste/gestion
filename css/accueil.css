@@ -25,9 +25,8 @@ h1 {
     color: #333;
 }
 
-a {
+.lien {
     color: #05403e;
-    text-decoration: none;
     display: flex;
     padding: 20px;
     border: 2px solid #f8f5f3;
@@ -36,7 +35,17 @@ a {
     transition: box-shadow 0.3s ease-in-out;
 }
 
-a:hover {
+a {
+    text-decoration: none;
+    color: #05403e;
+    margin-left: 2%;
+}
+
+img {
+    width: 15px;
+}
+
+.lien:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 4px 15px rgba(0, 0, 0, 0.2);
     /* Ombre douce */
 }
