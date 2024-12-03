@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
     <link rel="stylesheet" href="css/code.css">
     <title>Accès à la page</title>
 </head>
@@ -119,7 +119,7 @@
                 // Réinitialise les champs
 
                 // Attendre un court délai avant la redirection
-                window.location.href = 'https://conge.netlify.app';
+                window.location.href = 'https://factures.netlify.app';
                 setTimeout(() => {
                     inputs.forEach(input => (input.value = ''));
                     inputs[0].focus(); // Repositionne le curseur sur le premier champ
