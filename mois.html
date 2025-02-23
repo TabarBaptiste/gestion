@@ -11,15 +11,33 @@
 <body>
     <div class="container">
         <h1>Calculateur d'Épargne Mensuelle</h1>
+
         <div class="champ">
-            <label for="futureValue">Valeur future (en €) :</label>
-            <input type="number" id="futureValue" placeholder="Exemple : 10000" required>
+            <!-- Sélecteur de mode de calcul -->
+            <div class="champ">
+                <label for="calculationMode">Mode de calcul :</label>
+                <select id="calculationMode">
+                    <option value="monthlySavings">Montant à épargner par mois</option>
+                    <option value="monthsNeeded">Nombre de mois nécessaires</option>
+                </select>
+            </div>
 
-            <label for="interestRate">Taux d'intérêt annuel (en %, défaut : 2,5%) :</label>
-            <input type="number" id="interestRate" placeholder="Exemple : 3">
+            <!-- Champs communs -->
+            <div class="champ">
+                <label for="futureValue">Valeur future (en €) :</label>
+                <input type="number" id="futureValue" placeholder="Exemple : 10000" min="0" required>
+            </div>
 
-            <label for="months">Nombre de mois :</label>
-            <input type="number" id="months" placeholder="Exemple : 24" required>
+            <!-- Champs variables selon le mode -->
+            <div class="champ" id="monthlySavingsInput">
+                <label for="months">Nombre de mois :</label>
+                <input type="number" id="months" placeholder="Exemple : 24" min="0" required>
+            </div>
+
+            <div class="champ" id="monthsNeededInput" style="display: none;">
+                <label for="monthlyAmount">Montant épargné par mois (en €) :</label>
+                <input type="number" id="monthlyAmount" placeholder="Exemple : 500" min="0" required>
+            </div>
         </div>
 
         <div class="apres">
@@ -28,11 +46,17 @@
     </div>
 
     <script>
-        // Fonction qui calcule automatiquement dès que les valeurs changent
-        function calculateSavings() {
+        // Fonction pour basculer entre les modes
+        function toggleCalculationMode() {
+            const mode = document.getElementById('calculationMode').value;
+            document.getElementById('monthlySavingsInput').style.display = mode === 'monthlySavings' ? 'block' : 'none';
+            document.getElementById('monthsNeededInput').style.display = mode === 'monthsNeeded' ? 'block' : 'none';
+            document.getElementById('result').style.display = 'none'; // Réinitialise le résultat
+        }
+
+        // Fonction pour calculer l'épargne mensuelle
+        function calculateMonthlySavings() {
             const futureValue = parseFloat(document.getElementById('futureValue').value);
-            const interestRateInput = document.getElementById('interestRate').value;
-            const interestRate = interestRateInput ? parseFloat(interestRateInput) / 100 / 12 : 0.025 / 12;
             const months = parseInt(document.getElementById('months').value);
 
             if (!futureValue || !months) {
@@ -40,17 +64,46 @@
                 return;
             }
 
-            const monthlySavings = futureValue * interestRate / (Math.pow(1 + interestRate, months) - 1);
+            let monthlySavings = futureValue / months;
 
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `Vous devez épargner environ <strong>${monthlySavings.toFixed(0)}€</strong> par mois.`; // Mise en gras
+            resultDiv.innerHTML = `Vous devez épargner environ <strong>${monthlySavings.toFixed(0)}€</strong> par mois.`;
             resultDiv.style.display = 'block';
         }
 
-        // Ajouter des écouteurs d'événements pour chaque champ afin de déclencher le calcul automatiquement
-        document.getElementById('futureValue').addEventListener('input', calculateSavings);
-        document.getElementById('interestRate').addEventListener('input', calculateSavings);
-        document.getElementById('months').addEventListener('input', calculateSavings);
+        // Fonction pour calculer le nombre de mois nécessaires
+        function calculateMonthsNeeded() {
+            const futureValue = parseFloat(document.getElementById('futureValue').value);
+            const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value);
+
+            if (!futureValue || !monthlyAmount) {
+                document.getElementById('result').style.display = 'none';
+                return;
+            }
+
+            let monthsNeeded = futureValue / monthlyAmount;
+
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `Il vous faudra environ <strong>${Math.ceil(monthsNeeded)} mois</strong> pour atteindre votre objectif.`;
+            resultDiv.style.display = 'block';
+        }
+
+        // Fonction principale pour gérer le calcul selon le mode sélectionné
+        function handleCalculation() {
+            const mode = document.getElementById('calculationMode').value;
+            if (mode === 'monthlySavings') {
+                calculateMonthlySavings();
+            } else if (mode === 'monthsNeeded') {
+                calculateMonthsNeeded();
+            }
+        }
+
+        // Ajouter des écouteurs d'événements
+        document.getElementById('calculationMode').addEventListener('change', toggleCalculationMode);
+        document.getElementById('futureValue').addEventListener('input', handleCalculation);
+        document.getElementById('months').addEventListener('input', handleCalculation);
+        document.getElementById('monthlyAmount').addEventListener('input', handleCalculation);
     </script>
 </body>
 

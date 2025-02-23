@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
+    <link rel="shortcut icon" href="font\css\all.css" type="image/x-icon">
 </head>
 
 <body>
@@ -17,11 +17,11 @@
         <div class="formulaire">
             <div class="champ">
                 <label for="versement-initial">Montant du versement initial (en euros) :</label>
-                <input type="number" id="versement-initial" min="0" step="0.01" placeholder="Minimum 30€">
+                <input type="number" id="versement-initial" min="0" step="0.1" placeholder="Minimum 30€">
             </div>
             <div class="champ">
                 <label for="versement-mensuel">Versement mensuel (en euros) :</label>
-                <input type="number" id="versement-mensuel" min="0" step="0.01" required>
+                <input type="number" id="versement-mensuel" min="0" step="0.1" required>
             </div>
             <div class="champ">
                 <label for="duree-epargne">Durée de l'épargne (en années) :</label>
@@ -33,19 +33,14 @@
         <div id="resultat-epargne"></div>
     </div>
     <script>
-    // Constants
-        const LIMITE_VERSEMENTS = 10000; // Limite des versements sur le Livret A
-        const TAUX_ANNUEL = 4.0 / 100; // Taux annuel en décimal
+        // Constants
+        const LIMITE_VERSEMENTS = 10000; // Limite des versements sur le LEP
+        const TAUX_ANNUEL = 3.5 / 100; // Taux annuel en décimal
 
         // Fonction : Validation de la limite et ajustement des versements
         function calculerVersementsMensuels(versementsTotaux, versementMensuel) {
             const montantRestant = LIMITE_VERSEMENTS - versementsTotaux;
             return Math.min(versementMensuel, montantRestant);
-        }
-
-        // Fonction : Calcul des intérêts mensuels
-        function calculerInteretsMensuels(montant) {
-            return montant * (TAUX_ANNUEL / 12);
         }
 
         // Fonction principale : Calcul de l'épargne
@@ -66,23 +61,25 @@
                 return;
             }
 
-            const nombreMois = dureeAnnees * 12;
             let epargneTotale = versementInitial;
             let versementsTotaux = versementInitial;
             let totalInterets = 0;
 
-            for (let mois = 1; mois <= nombreMois; mois++) {
-                // Ajouter les intérêts pour le mois
-                const interetsMensuels = calculerInteretsMensuels(epargneTotale);
-                totalInterets += interetsMensuels;
-                epargneTotale += interetsMensuels;
-
-                // Vérifier si des versements mensuels sont encore possibles
-                if (versementsTotaux < LIMITE_VERSEMENTS) {
-                    const versementEffectif = calculerVersementsMensuels(versementsTotaux, versementMensuel);
-                    epargneTotale += versementEffectif;
-                    versementsTotaux += versementEffectif;
+            for (let annee = 1; annee <= dureeAnnees; annee++) {
+                // Ajouter les versements de l'année
+                for (let mois = 1; mois <= 12; mois++) {
+                    if (versementsTotaux < LIMITE_VERSEMENTS) {
+                        const versementEffectif = calculerVersementsMensuels(versementsTotaux, versementMensuel);
+                        epargneTotale += versementEffectif;
+                        versementsTotaux += versementEffectif;
+                    }
                 }
+
+                // Appliquer les intérêts composés une fois par an
+                const interetsAnnuels = epargneTotale * TAUX_ANNUEL;
+                totalInterets += interetsAnnuels;
+                epargneTotale += interetsAnnuels;
+                console.log('totalInterets :', totalInterets);
             }
 
             // Résultats finaux

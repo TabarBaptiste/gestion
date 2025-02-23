@@ -33,6 +33,21 @@
         <div id="resultat-epargne"></div>
     </div>
     <script>
+        // Limite la saisie à deux décimales maximum
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', (event) => {
+                const valeur = event.target.value;
+
+                // Vérifie si la valeur a plus de deux décimales
+                if (valeur.includes('.')) {
+                    const parties = valeur.split('.');
+                    if (parties[1].length > 2) {
+                        event.target.value = `${parties[0]}.${parties[1].slice(0, 2)}`;
+                    }
+                }
+            });
+        });
+
         // Constants
         const LIMITE_VERSEMENTS = 22950; // Limite des versements sur le Livret A
         const TAUX_ANNUEL = 2.5 / 100; // Taux annuel en décimal
